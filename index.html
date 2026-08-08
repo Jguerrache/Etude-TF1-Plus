@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TF1+ — Étude de cas</title>
 <style>
 /* ============================================================
@@ -84,6 +84,120 @@ kbd {
   padding: 1px 5px; color: #7a869e;
 }
 
+/* ---------- expérience mobile dédiée ----------
+   Le canevas desktop 1920×1080 reste la source de vérité. Sous 700 px,
+   son contenu est recomposé en lecture verticale, sans toucher aux slides. */
+#mobile-ui { display: none; }
+
+@media screen and (max-width: 700px) {
+  html, body {
+    width: 100%; height: 100%; min-height: 100%;
+    overflow: hidden; overscroll-behavior: none;
+    background: #04050f;
+  }
+  #stage, #bar { display: none !important; }
+  #mobile-ui {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    height: 100vh; height: 100dvh;
+    color: #fff; background: #04050f;
+  }
+  #mobile-viewport { position: relative; flex: 1 1 auto; min-height: 0; }
+  .mobile-slide {
+    position: absolute; inset: 0;
+    display: none; overflow-x: hidden; overflow-y: auto;
+    padding: calc(24px + env(safe-area-inset-top)) 22px 118px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mobile-slide::-webkit-scrollbar { display: none; }
+  .mobile-slide.on { display: block; }
+  .mobile-mesh {
+    position: fixed; inset: 0; pointer-events: none; overflow: hidden;
+    background:
+      radial-gradient(circle at 18% 2%, rgba(74,32,230,.75), transparent 38%),
+      radial-gradient(circle at 92% 74%, rgba(16,36,240,.75), transparent 45%),
+      #04050f;
+  }
+  .mobile-content { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; }
+  .mobile-head {
+    display: flex; align-items: center; justify-content: space-between;
+    min-height: 30px; margin-bottom: 54px;
+  }
+  .mobile-kicker {
+    max-width: calc(100% - 96px);
+    font: 500 11px/1.35 'IBM Plex Mono', monospace;
+    letter-spacing: .12em; text-transform: uppercase;
+  }
+  .mobile-logo { position: relative !important; flex: 0 0 auto; }
+  .mobile-items { display: flex; flex-direction: column; gap: 18px; }
+  .mobile-item { position: relative; white-space: pre-wrap; }
+  .mobile-title {
+    margin-bottom: 20px;
+    font: 700 clamp(34px, 10vw, 48px)/1.02 'Space Grotesk', sans-serif;
+    letter-spacing: -.035em;
+  }
+  .mobile-lead {
+    margin-bottom: 12px;
+    font: 400 clamp(21px, 6vw, 27px)/1.25 'Space Grotesk', sans-serif;
+  }
+  .mobile-value {
+    margin-top: 18px;
+    font: 700 clamp(42px, 14vw, 68px)/.95 'Space Grotesk', sans-serif;
+    letter-spacing: -.04em;
+  }
+  .mobile-heading {
+    margin-top: 12px;
+    font: 500 clamp(22px, 6.5vw, 30px)/1.18 'Space Grotesk', sans-serif;
+  }
+  .mobile-body {
+    font: 400 clamp(17px, 4.7vw, 21px)/1.48 'Space Grotesk', sans-serif;
+  }
+  .mobile-label {
+    margin-top: 5px;
+    font: 500 11px/1.5 'IBM Plex Mono', monospace;
+    letter-spacing: .08em; text-transform: uppercase;
+  }
+  .mobile-rule {
+    width: 42px; height: 2px; margin: 16px 0 2px;
+    background: currentColor; opacity: .75;
+  }
+  .mobile-source {
+    margin-top: 42px; padding-top: 18px;
+    border-top: 1px solid currentColor; opacity: .62;
+    font: 400 10px/1.55 'IBM Plex Mono', monospace;
+    letter-spacing: .06em; text-transform: uppercase;
+  }
+  #mobile-nav {
+    position: absolute; z-index: 5;
+    left: 14px; right: 14px; bottom: calc(12px + env(safe-area-inset-bottom));
+    display: grid; grid-template-columns: 48px 1fr 48px;
+    align-items: center; gap: 12px;
+    padding: 9px;
+    border: 1px solid rgba(255,255,255,.16); border-radius: 18px;
+    background: rgba(5,7,18,.82); backdrop-filter: blur(18px);
+    box-shadow: 0 12px 34px rgba(0,0,0,.28);
+  }
+  #mobile-nav button {
+    width: 48px; height: 48px; padding: 0;
+    border: 0; border-radius: 13px;
+    color: #fff; background: rgba(255,255,255,.1);
+    font: 400 25px/1 'Space Grotesk', sans-serif;
+    touch-action: manipulation;
+  }
+  #mobile-nav button:disabled { opacity: .28; }
+  #mobile-progress { text-align: center; }
+  #mobile-counter {
+    display: block; color: #fff;
+    font: 500 12px/1.3 'IBM Plex Mono', monospace;
+    letter-spacing: .1em;
+  }
+  #mobile-hint {
+    display: block; margin-top: 3px; color: rgba(255,255,255,.55);
+    font: 400 10px/1.3 'Space Grotesk', sans-serif;
+  }
+}
+
 /* ---------- impression ---------- */
 @page { size: 1920px 1080px; margin: 0; }
 @media print {
@@ -124,6 +238,17 @@ kbd {
   <span><kbd>←</kbd> <kbd>→</kbd> naviguer</span>
   <span><kbd>N</kbd> notes</span>
   <span><kbd>F</kbd> plein écran</span>
+</div>
+<div id="mobile-ui" aria-label="Présentation TF1+ — version mobile">
+  <main id="mobile-viewport"></main>
+  <nav id="mobile-nav" aria-label="Navigation entre les slides">
+    <button id="mobile-prev" type="button" aria-label="Slide précédente">←</button>
+    <div id="mobile-progress">
+      <span id="mobile-counter">1 / 18</span>
+      <span id="mobile-hint">Glisser pour naviguer</span>
+    </div>
+    <button id="mobile-next" type="button" aria-label="Slide suivante">→</button>
+  </nav>
 </div>
 <script>
 /* ============================================================
@@ -370,7 +495,7 @@ n:[
 
 /* 12 — Arbitrages */
 { bg:"#f4f6fb", mesh:false, logo:"petit", notes:
-"- **La slide qui différencie.** La plupart des candidats listent ce qu'ils feraient ; très peu disent ce qu'ils sacrifient. C'est là qu'on démontre un arbitrage, pas un enthousiasme.\n- Point 2, attention au malentendu : on ne renonce pas à défendre l'utilisateur, on renonce à la **bataille frontale sur le volume**. Le formuler ainsi, sinon on passe pour complaisant avec la régie.\n- Point 3 est formulé comme une question de **séquence**, pas de valeur : le système existe et il est utile, il s'agit d'en évaluer la couverture CTV avant d'investir dans une refonte.\n- **Transition** : « et pour que tout ça soit vérifiable, voilà ce sur quoi j'accepte d'être jugé. »",
+"- **La slide qui différencie.** La plupart des candidats listent ce qu'ils feraient ; très peu disent ce qu'ils sacrifient. C'est là qu'on démontre un arbitrage, pas un enthousiasme.\n- Point 2, attention au malentendu : on ne renonce pas à défendre l'utilisateur, on renonce à la **bataille frontale sur le volume**. Le formuler ainsi, sinon on passe pour complaisant avec la régie.\n- Point 3 est formulé comme une question de **séquence**, pas de valeur : le système existe et il est utile, il s'agit d'en évaluer la couverture CTV avant d'investir dans une refonte.\n- **Transition** : « et pour que ces priorités restent vérifiables, voilà comment j'en mesurerais les progrès. »",
 n:[
 ["T",140,120,295,"PM|Medium",22,0,11,"L","#0032ff","§ 07  ·  ARBITRAGES"],
 ["T",140,172,1100,"SG|Bold",62,70,0,"L","#000a64","Ce que je ne ferais pas"],
@@ -458,22 +583,30 @@ n:[
 
 /* 15 — Mesure */
 { bg:"#0032ff", mesh:false, logo:"petit", notes:
-"- Registre volontairement au conditionnel : ce sont **des indicateurs proposés, pas des promesses tenues d'avance**.\n- Si on trouve les valeurs ambitieuses, le dire simplement : elles sont indicatives et se recalibrent une fois les données internes accessibles. **C'est le principe qui compte, pas le chiffre.**\n- Chacun est défini précisément — fenêtre glissante de 90 jours, incident confirmé hors exceptions contractuelles, combinaisons prioritaires, partage par surface. C'est ce qui les rend pilotables.\n- La dernière ligne est le point d'arrivée : **ce sont des indicateurs d'impact Produit et Business**, pas des indicateurs de production Design. C'est ce qui les rend audibles en comité de direction.\n- Fin du récit. Laisser la slide affichée pendant les questions.",
+"- La slide distingue désormais **deux résultats observables** et **deux capacités de maîtrise opérationnelle**. Elle ne met plus les quatre éléments au même niveau.\n- Les seuils sont des repères indicatifs, à recalibrer une fois les données internes accessibles. **C'est le principe de mesure qui compte, pas la promesse d'un chiffre avant diagnostic.**\n- À l'oral : « je ne mesurerais pas l'équipe au nombre d'écrans livrés. Je veux relier son travail à la satisfaction, à la fiabilité de Premium, à la robustesse CTV et à notre capacité à piloter le micropaiement. »\n- Fin du récit. Laisser la slide affichée pendant les questions.",
 n:[
 ["T",140,120,232,"PM|Medium",22,0,11,"L","#7fe3ff","§ 07  ·  MESURE"],
-["T",140,192,1100,"SG|Bold",62,70,0,"L","#edf1ff","Ce sur quoi je pourrais être jugé"],
-["T",140,338,400,"SG|Bold",88,96,0,"L","#ffffff","≥ 4,0"],
-["T",140,450,740,"SG|Regular",24,34,0,"L","#ffffff","Note moyenne des avis Android récents, mesurée sur une fenêtre glissante de 90 jours."],
-["T",1000,338,400,"SG|Bold",88,96,0,"L","#ffffff","0"],
-["T",1000,450,740,"SG|Regular",24,34,0,"L","#ffffff","Incident publicitaire confirmé en Premium, hors exceptions contractuelles."],
-["R",140,550,780,1,"#ffffff",0.34],
-["T",140,578,400,"SG|Bold",88,96,0,"L","#ffffff","100 %"],
-["T",140,690,740,"SG|Regular",24,34,0,"L","#ffffff","Combinaisons CTV prioritaires couvertes par un test sur environnement réel."],
-["R",1000,550,780,1,"#ffffff",0.34],
-["T",1000,578,400,"SG|Bold",88,96,0,"L","#ffffff","T+1"],
-["T",1000,690,740,"SG|Regular",24,34,0,"L","#ffffff","Avant la fin du premier trimestre, taux de conversion du micropaiement instrumenté et partagé par surface."],
-["R",140,818,1640,1,"#ffffff",0.34],
-["T",140,850,1400,"SG|Medium",28,40,0,"L","#edf1ff","Ce sont des indicateurs d'impact Produit et Business, pas des indicateurs de production Design. C'est volontaire."],
+["T",140,192,1300,"SG|Bold",62,70,0,"L","#edf1ff","Comment je mesurerais les progrès"],
+["T",140,326,500,"PM|Medium",16,0,12,"L","#7fe3ff","IMPACT"],
+["T",140,356,540,"SG|Bold",68,78,0,"L","#ffffff","≥ 4,0"],
+["T",140,438,740,"SG|Medium",28,36,0,"L","#edf1ff","Satisfaction Android"],
+["T",140,482,740,"SG|Regular",20,29,0,"L","#ffffff","Note moyenne des avis récents, mesurée sur 90 jours glissants."],
+["T",1000,326,500,"PM|Medium",16,0,12,"L","#7fe3ff","IMPACT"],
+["T",1000,356,620,"SG|Bold",68,78,0,"L","#ffffff","Vers 0"],
+["T",1000,438,740,"SG|Medium",28,36,0,"L","#edf1ff","Fiabilité Premium"],
+["T",1000,482,740,"SG|Regular",20,29,0,"L","#ffffff","Incidents publicitaires confirmés sur les parcours Premium, hors exceptions contractuelles."],
+["R",140,568,780,1,"#ffffff",0.34],
+["R",1000,568,780,1,"#ffffff",0.34],
+["T",140,600,650,"PM|Medium",16,0,12,"L","#ff8ab8","MAÎTRISE OPÉRATIONNELLE"],
+["T",140,630,540,"SG|Bold",68,78,0,"L","#ffffff","100 %"],
+["T",140,712,740,"SG|Medium",28,36,0,"L","#edf1ff","Robustesse CTV"],
+["T",140,756,740,"SG|Regular",20,29,0,"L","#ffffff","Parcours prioritaires testés sur les principaux environnements réels."],
+["T",1000,600,650,"PM|Medium",16,0,12,"L","#ff8ab8","MAÎTRISE OPÉRATIONNELLE"],
+["T",1000,630,620,"SG|Bold",68,78,0,"L","#ffffff","≤ 90 j"],
+["T",1000,712,740,"SG|Medium",28,36,0,"L","#edf1ff","Pilotage du micropaiement"],
+["T",1000,756,740,"SG|Regular",20,29,0,"L","#ffffff","Conversion mesurée et partagée par surface, avec une première référence commune."],
+["R",140,838,1640,1,"#ffffff",0.34],
+["T",140,866,1540,"SG|Medium",24,34,0,"L","#edf1ff","Deux indicateurs d'impact et deux indicateurs de maîtrise opérationnelle — tous orientés vers l'amélioration de l'expérience et de la performance."],
 ["T",140,1000,1640,"PM|Regular",15,22,10,"L","#ffffff","PRISE DE POSITION EN TANT QUE HEAD OF DESIGN - NON PRESCRITE PAR TF1"]
 ]},
 
@@ -636,6 +769,79 @@ if (document.fonts && document.fonts.load) {
 }
 SLIDES.forEach((d, i) => deck.appendChild(buildSlide(d, i)));
 
+/* ---------- composition mobile ----------
+   On repart des mêmes données que le desktop afin que les deux versions
+   restent toujours synchronisées. Les éléments décoratifs sont retirés et
+   les textes sont hiérarchisés pour une lecture portrait. */
+const mobileViewport = document.getElementById("mobile-viewport");
+const mobileCounter = document.getElementById("mobile-counter");
+const mobilePrev = document.getElementById("mobile-prev");
+const mobileNext = document.getElementById("mobile-next");
+const mobileSlides = [];
+
+function mobileTextClass(node, isFirstTitle) {
+  const [, , y, , font, size, , , , , txt] = node;
+  const [fam, weight] = font.split("|");
+  if (y >= 980) return "mobile-source";
+  if (isFirstTitle) return "mobile-title";
+  if (size >= 50 && txt.length <= 42) return "mobile-value";
+  if (size >= 46) return "mobile-title";
+  if (size >= 30 && (weight === "Bold" || weight === "Medium")) return "mobile-heading";
+  if (size >= 26) return "mobile-lead";
+  if (fam === "PM" || size <= 19) return "mobile-label";
+  return "mobile-body";
+}
+
+function buildMobileSlide(data, index) {
+  const section = el("section", "mobile-slide");
+  section.style.background = data.bg;
+  section.setAttribute("aria-label", "Slide " + (index + 1) + " sur " + SLIDES.length);
+  if (data.mesh) section.appendChild(el("div", "mobile-mesh"));
+
+  const content = el("div", "mobile-content");
+  const head = el("header", "mobile-head");
+  const texts = data.n.filter(n => n[0] === "T");
+  const kickerNode = texts.find(n => n[2] < 350 && n[4].startsWith("PM|") && n[5] <= 22);
+  const kicker = el("div", "mobile-kicker");
+  kicker.textContent = kickerNode ? kickerNode[10] : "TF1+ · ÉTUDE DE CAS";
+  kicker.style.color = kickerNode ? kickerNode[9] : "#00c8ff";
+  head.appendChild(kicker);
+  const logo = logoSVG(data.bg.toLowerCase() === "#f4f6fb" ? "#000a64" : "#ffffff", 72);
+  logo.classList.add("mobile-logo");
+  head.appendChild(logo);
+  content.appendChild(head);
+
+  const items = el("div", "mobile-items");
+  let titleAssigned = false;
+  texts.forEach(node => {
+    const [, , y, , font, size, , , , color, txt] = node;
+    if (node === kickerNode) return;
+    // Graduations de la figure stores : utiles sur le graphique desktop,
+    // mais parasites sans l'axe en lecture mobile.
+    if (index === 5 && y === 728 && /^\d$/.test(txt)) return;
+    const candidateTitle = !titleAssigned && font.startsWith("SG|") && size >= 52 && y < 620;
+    if (candidateTitle) titleAssigned = true;
+    const item = el("div", "mobile-item " + mobileTextClass(node, candidateTitle));
+    item.textContent = txt;
+    item.style.color = color;
+    if (item.classList.contains("mobile-heading") || item.classList.contains("mobile-value")) {
+      const rule = el("div", "mobile-rule");
+      rule.style.color = color;
+      items.appendChild(rule);
+    }
+    items.appendChild(item);
+  });
+  content.appendChild(items);
+  section.appendChild(content);
+  return section;
+}
+
+SLIDES.forEach((data, index) => {
+  const slide = buildMobileSlide(data, index);
+  mobileViewport.appendChild(slide);
+  mobileSlides.push(slide);
+});
+
 const notesPane = document.getElementById("notes");
 const counter = document.getElementById("counter");
 const slides = Array.from(document.querySelectorAll(".slide"));
@@ -662,6 +868,17 @@ function show(i) {
     ? "<ul>" + mdToHTML(SLIDES[current].notes) + "</ul>"
     : "<p class='vide'>Pas de notes pour cette slide.</p>";
   fit();
+  showMobile(current);
+}
+
+function showMobile(i) {
+  mobileSlides.forEach((slide, index) => {
+    slide.classList.toggle("on", index === i);
+    if (index === i) slide.scrollTop = 0;
+  });
+  mobileCounter.textContent = (i + 1) + " / " + mobileSlides.length;
+  mobilePrev.disabled = i === 0;
+  mobileNext.disabled = i === mobileSlides.length - 1;
 }
 
 function fit() {
@@ -683,6 +900,24 @@ document.addEventListener("keydown", e => {
     else document.documentElement.requestFullscreen();
   }
 });
+mobilePrev.addEventListener("click", () => show(current - 1));
+mobileNext.addEventListener("click", () => show(current + 1));
+
+let touchStartX = 0;
+let touchStartY = 0;
+mobileViewport.addEventListener("touchstart", e => {
+  const touch = e.changedTouches[0];
+  touchStartX = touch.clientX;
+  touchStartY = touch.clientY;
+}, { passive: true });
+mobileViewport.addEventListener("touchend", e => {
+  const touch = e.changedTouches[0];
+  const dx = touch.clientX - touchStartX;
+  const dy = touch.clientY - touchStartY;
+  if (Math.abs(dx) > 64 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+    show(current + (dx < 0 ? 1 : -1));
+  }
+}, { passive: true });
 window.addEventListener("resize", fit);
 show(0);
 
